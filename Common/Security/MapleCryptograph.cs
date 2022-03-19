@@ -16,7 +16,7 @@ namespace FreeMS.Security
             Encryptograph = new AesCryptograph(sendIV, unchecked((short)(0xFFFF - Application.MapleVersion)));
             Decryptograph = new AesCryptograph(receiveIV, Application.MapleVersion);
 
-            using ByteBuffer buffer = new ByteBuffer(16);
+            using ByteBuffer buffer = new ByteBuffer(15);
             buffer.WriteShort(0x0D); // 13 = MSEA, 14 = GlobalMS, 15 = EMS
             buffer.WriteShort(Application.MapleVersion);
             buffer.WriteString(Application.PatchVersion);

@@ -6,42 +6,43 @@ using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 
-class LoginServer
+class LoginServer : MapleServer<LoginSession>
 {
-    public void Start()
+    protected override LoginSession CreateSession(Socket socket)
     {
-        if (mIsStarted)
-            return;
-        mLog.Info("正在启动");
+        var session = new LoginSession();
+        var client = new LoginClient(socket);
+        session.Initialize(this, client);
+        return session;
+    }
+
+    protected override ValueTask OnShutdown()
+    {
+        mTcpListener.Stop();
+        return ValueTask.CompletedTask;
+    }
+
+    protected override ValueTask OnStartup()
+    {
         var ip = IPAddress.Parse("127.0.0.1");
         mTcpListener = new TcpListener(ip, 9595);
         mTcpListener.Start();
-        mIsStarted = true;
         Task.Run(loop, mCancelSource.Token);
-    }
-
-    public void Stop()
-    {
-        if (!mIsStarted)
-            return;
-        mTcpListener.Stop();
-        mLog.Info("停止");
+        return ValueTask.CompletedTask;
     }
 
     private async Task loop()
     {
-        mLog.Info("已启动");
         while (true)
         {
             var socket = await mTcpListener.AcceptSocketAsync();
-            var mapleClient = new MapleClient(socket);
-            mapleClient.SendHello();
+            var session = CreateSession(socket);
+            session.Start();
             await Task.Yield();
         }
     }
 
     private static readonly ILogger mLog = LogManager.GetLogger("LoginServer");
     private readonly CancellationTokenSource mCancelSource = new();
-    private bool mIsStarted;
     private TcpListener mTcpListener;
 }

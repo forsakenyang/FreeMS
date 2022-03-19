@@ -11,7 +11,7 @@ class Program
     {
         setupLogs();
         var server = new LoginServer();
-        server.Start();
+        server.Startup().AsTask().Wait();
         Console.ReadKey();
     }
 
