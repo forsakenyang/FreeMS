@@ -21,34 +21,69 @@ class Login : LoginCommand
             Id = 1,
             Name = username
         };
-        send(session, ErrorCode.Ok);
+        sendOk(session);
+        sendServerList(session);
+        sendEndOfServerList(session);
     }
 
-    private static void send(LoginSession session, ErrorCode code)
+    private static void sendEndOfServerList(LoginSession session)
     {
-        var packet = new MaplePacket(0);
+        var packet = new MaplePacket(ClientOpCode.ServerList);
+        packet.WriteByte(0xFF);
+        session.Send(packet);
+    }
 
-        if (code == ErrorCode.Ok)
-        {
-            var account = session.Account;
-            packet.WriteByte();
-            packet.WriteInt(account.Id);
-            packet.WriteByte(); // TODO:gender
-            packet.WriteBool(false); // TODO: is gm
-            packet.WriteByte();
-            packet.WriteString(account.Name);
-            packet.WriteBytes(mUnknownBytes);
-            packet.WriteInt();
-            packet.WriteLong();
-            packet.WriteString(account.Id.ToString());
-            packet.WriteString(account.Name);
-            packet.WriteByte(1);
-        }
-        else
-        {
-            packet.WriteInt((int)code);
-            packet.WriteShort();
-        }
+    private static void sendFail(LoginSession session, ErrorCode code)
+    {
+        var packet = new MaplePacket(ClientOpCode.LoginStatus);
+        packet.WriteInt((int)code);
+        packet.WriteShort();
+        session.Send(packet);
+    }
+
+    private static void sendOk(LoginSession session)
+    {
+        var packet = new MaplePacket(ClientOpCode.LoginStatus);
+        var account = session.Account;
+        packet.WriteByte();
+        packet.WriteInt(account.Id);
+        packet.WriteByte(0xFF); // TODO:gender
+        packet.WriteShort(0); // TODO: is gm
+        packet.WriteString(account.Name);
+        packet.WriteBytes(mUnknownBytes);
+        packet.WriteInt();
+        packet.WriteLong();
+        packet.WriteString(account.Id.ToString());
+        packet.WriteString(account.Name);
+        packet.WriteByte(1);
+        session.Send(packet);
+    }
+
+    private static void sendServerList(LoginSession session)
+    {
+        var packet = new MaplePacket(ClientOpCode.ServerList);
+
+        var serverId = (byte)0; // 0 = Aquilla, 1 = bootes, 2 = cass, 3 = delphinus
+        var serverName = "FreeMS";
+        var serverFlag = (byte)0;
+
+        packet.WriteByte(serverId);
+        packet.WriteString(serverName);
+        packet.WriteByte(serverFlag);
+        packet.WriteString("EventMessage"); // TODO:event message
+        packet.WriteShort(100); // TODO: unknown
+        packet.WriteShort(100); // TODO: unknown
+
+        var lastChannel = (byte)1;
+        packet.WriteByte(lastChannel);
+        packet.WriteInt(500); // TODO: unknown
+
+        var load = 1200;
+        packet.WriteString($"{serverName}-{serverId}");
+        packet.WriteInt(load);
+        packet.WriteByte(serverId);
+        packet.WriteShort(0);
+        packet.WriteShort(0);
 
         session.Send(packet);
     }

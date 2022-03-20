@@ -1,6 +1,6 @@
 ﻿namespace FreeMS.Constants;
 
-enum ErrorCode
+public enum ErrorCode
 {
     Ok = 0,
 

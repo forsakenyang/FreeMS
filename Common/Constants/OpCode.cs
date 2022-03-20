@@ -1,6 +1,9 @@
 ﻿namespace FreeMS.Constants
 {
-    enum OpCode : ushort
+    /// <summary>
+    /// 客户端发送给服务端的命令。
+    /// </summary>
+    public enum OpCode : ushort
     {
         /// <summary>
         /// 使用账号密码登录。
