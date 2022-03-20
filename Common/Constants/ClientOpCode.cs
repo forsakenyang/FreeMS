@@ -19,4 +19,9 @@ public enum ClientOpCode : ushort
     /// 服务器列表。
     /// </summary>
     ServerList = 0x09,
+
+    /// <summary>
+    /// 角色列表。
+    /// </summary>
+    CharacterList = 0x0A,
 }
