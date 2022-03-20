@@ -19,4 +19,9 @@ public enum OpCode : ushort
     /// 请求角色列表。
     /// </summary>
     CharacterList = 0x09,
+
+    /// <summary>
+    /// 选择角色。
+    /// </summary>
+    SelectCharacter = 0x0A,
 }

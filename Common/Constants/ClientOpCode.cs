@@ -24,4 +24,9 @@ public enum ClientOpCode : ushort
     /// 角色列表。
     /// </summary>
     CharacterList = 0x0A,
+
+    /// <summary>
+    /// 频道服务器地址和端口。
+    /// </summary>
+    ServerIp = 0x0B,
 }
