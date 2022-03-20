@@ -7,6 +7,8 @@ public interface IMapleSession
     void HandlePacket(MaplePacket packet);
 
     void Initialize(IMapleServer server, MapleClient client);
+
+    void Start();
 }
 
 public class MapleSession<TSession, TClient> : IMapleSession
@@ -50,6 +52,11 @@ public class MapleSession<TSession, TClient> : IMapleSession
         Client.Session = this;
     }
 
+    public void Start()
+    {
+        OnStart();
+    }
+
     #endregion
 
     public MapleSession()
@@ -60,11 +67,6 @@ public class MapleSession<TSession, TClient> : IMapleSession
     public void Send(MaplePacket packet)
     {
         Client.Send(packet);
-    }
-
-    public void Start()
-    {
-        OnStart();
     }
 
     protected virtual void OnStart()

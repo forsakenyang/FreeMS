@@ -24,4 +24,9 @@ public enum OpCode : ushort
     /// 选择角色。
     /// </summary>
     SelectCharacter = 0x0A,
+
+    /// <summary>
+    /// 登录到频道服务器。
+    /// </summary>
+    PlayerLogin = 0x0B,
 }

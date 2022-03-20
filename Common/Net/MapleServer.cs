@@ -1,5 +1,6 @@
 ﻿namespace FreeMS;
 
+using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Text;
@@ -18,6 +19,10 @@ public abstract class MapleServer<TSession> : IMapleServer where TSession : IMap
 {
     public bool IsStarted { get; private set; }
 
+    protected IPEndPoint EndPoint { get; set; }
+
+    protected TcpListener Listener { get; private set; }
+
     protected ILogger Log { get; }
 
     #region IMapleServer Members
@@ -29,7 +34,8 @@ public abstract class MapleServer<TSession> : IMapleServer where TSession : IMap
         try
         {
             Log.Info("正在停止");
-            await OnStartup();
+            Listener.Stop();
+            await OnShutdown();
             IsStarted = true;
             Log.Info("已停止");
         }
@@ -48,6 +54,7 @@ public abstract class MapleServer<TSession> : IMapleServer where TSession : IMap
             Log.Info("正在启动");
             registerEncoding();
             loadCommands();
+            setupListener();
             await OnStartup();
             IsStarted = true;
             Log.Info("已启动");
@@ -103,11 +110,32 @@ public abstract class MapleServer<TSession> : IMapleServer where TSession : IMap
         Log.Debug($"已加载{mCommands.Count}条命令");
     }
 
+    private async Task loop()
+    {
+        while (true)
+        {
+            var socket = await Listener.AcceptSocketAsync();
+            var session = CreateSession(socket);
+            session.Start();
+            await Task.Yield();
+        }
+    }
+
     private void registerEncoding()
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         ByteBuffer.TextEncoding = Encoding.GetEncoding("GB2312");
     }
 
+    private void setupListener()
+    {
+        if (EndPoint == null)
+            throw new InvalidOperationException();
+        Listener = new TcpListener(EndPoint);
+        Listener.Start();
+        Task.Run(loop, mCancelSource.Token);
+    }
+
+    private readonly CancellationTokenSource mCancelSource = new();
     private readonly Dictionary<ushort, IMapleCommand<TSession>> mCommands = new();
 }

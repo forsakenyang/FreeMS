@@ -29,4 +29,9 @@ public enum ClientOpCode : ushort
     /// 频道服务器地址和端口。
     /// </summary>
     ServerIp = 0x0B,
+
+    /// <summary>
+    /// 传送到地图。
+    /// </summary>
+    WrapToMap = 0x81,
 }
