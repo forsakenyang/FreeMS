@@ -2,6 +2,8 @@
 
 using System.Net.Sockets;
 using System.Reflection;
+using System.Text;
+using IO;
 using Net;
 using NLog;
 
@@ -44,6 +46,7 @@ public abstract class MapleServer<TSession> : IMapleServer where TSession : IMap
         try
         {
             Log.Info("正在启动");
+            registerEncoding();
             loadCommands();
             await OnStartup();
             IsStarted = true;
@@ -98,6 +101,12 @@ public abstract class MapleServer<TSession> : IMapleServer where TSession : IMap
                 Log.Warn($"重复定义的指令，{type.Name}将不会执行");
         }
         Log.Debug($"已加载{mCommands.Count}条命令");
+    }
+
+    private void registerEncoding()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        ByteBuffer.TextEncoding = Encoding.GetEncoding("GB2312");
     }
 
     private readonly Dictionary<ushort, IMapleCommand<TSession>> mCommands = new();

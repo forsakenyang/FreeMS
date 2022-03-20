@@ -65,12 +65,12 @@ class Login : LoginCommand
 
         var serverId = (byte)0; // 0 = Aquilla, 1 = bootes, 2 = cass, 3 = delphinus
         var serverName = "FreeMS";
-        var serverFlag = (byte)0;
+        var serverFlag = (byte)ServerFlag.Hot;
 
         packet.WriteByte(serverId);
         packet.WriteString(serverName);
         packet.WriteByte(serverFlag);
-        packet.WriteString("EventMessage"); // TODO:event message
+        packet.WriteString("活动消息"); // TODO:event message
         packet.WriteShort(100); // TODO: unknown
         packet.WriteShort(100); // TODO: unknown
 

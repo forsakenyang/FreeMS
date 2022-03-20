@@ -4,6 +4,8 @@ using System.Net;
 
 namespace FreeMS.IO
 {
+    using System.Text;
+
     public class ByteBuffer : IDisposable
     {
         private int position;
@@ -191,21 +193,12 @@ namespace FreeMS.IO
             this.Position += sizeof(bool);
         }
 
-        public void WriteString(string item, params object[] args)
+        public void WriteString(string item)
         {
-            if (item != null)
-            {
-                item = string.Format(item, args);
-            }
-
-            this.Writer.Write((short)item.Length);
-
-            foreach (char c in item)
-            {
-                this.Writer.Write(c);
-            }
-
-            this.Position += item.Length + sizeof(short);
+            var bytes = TextEncoding.GetBytes(item);
+            Writer.Write((ushort)bytes.Length);
+            Writer.Write(bytes);
+            Position += bytes.Length + sizeof(ushort);
         }
 
         public void WriteStringFixed(string item, int length)
@@ -348,5 +341,7 @@ namespace FreeMS.IO
             this.Position += 4;
             return result;
         }
+
+        public static Encoding TextEncoding = Encoding.Default;
     }
 }

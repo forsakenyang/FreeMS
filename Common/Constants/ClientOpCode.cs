@@ -11,7 +11,12 @@ public enum ClientOpCode : ushort
     LoginStatus = 0x00,
 
     /// <summary>
+    ///  服务器状态。
+    /// </summary>
+    ServerStatus = 0x06,
+
+    /// <summary>
     /// 服务器列表。
     /// </summary>
-    ServerList = 0x09
+    ServerList = 0x09,
 }

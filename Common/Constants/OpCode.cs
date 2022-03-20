@@ -9,5 +9,10 @@
         /// 使用账号密码登录。
         /// </summary>
         Login = 0x01,
+
+        /// <summary>
+        /// 请求游戏区状态。
+        /// </summary>
+        ServerStatus = 0x05
     }
 }
