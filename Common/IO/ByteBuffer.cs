@@ -203,17 +203,10 @@ namespace FreeMS.IO
 
         public void WriteStringFixed(string item, int length)
         {
-            foreach (char c in item)
-            {
-                this.Writer.Write(c);
-            }
-
-            for (int i = item.Length; i < length; i++)
-            {
-                this.Writer.Write((byte)0);
-            }
-
-            this.Position += length;
+            var bytes = new byte[length];
+            TextEncoding.GetBytes(item, bytes);
+            Writer.Write(bytes);
+            Position += length;
         }
 
         public void WriteIntDateTime(DateTime item)

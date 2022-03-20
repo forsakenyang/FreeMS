@@ -10,6 +10,10 @@ class CharacterList : LoginCommand
 
     public override void Execute(LoginSession session, MaplePacket packet)
     {
+        var worldId = packet.ReadByte();
+        var channelId = packet.ReadByte();
+        packet.ReadInt(); // TODO: unknown
+
         var outPacket = new MaplePacket(ClientOpCode.CharacterList);
         outPacket.WriteByte(0); // TODO: unknown
         outPacket.WriteInt(0); // TODO: unknown
@@ -18,23 +22,22 @@ class CharacterList : LoginCommand
         {
             new Character
             {
-                Exp = 0,
-                Face = 0,
-                Frame = 0,
+                Exp = 100,
+                Face = 20100,
+                Frame = 100,
                 Gender = Gender.Male,
-                Hair = 0,
+                Hair = 30730,
                 Id = 1,
-                InitialSpawnPoint = 0,
-                Job = 0,
-                Level = 1,
-                MapId = 0,
+                InitialSpawnPoint = 35,
+                Job = 200,
+                Level = 25,
+                MapId = 101000000,
                 Name = "test",
                 AvailableAp = 0,
                 AvailableSp = 0,
-                Skin = 0
+                Skin = 2
             }
         };
-        characters = Array.Empty<Character>();
 
         outPacket.WriteByte((byte)characters.Length);
 
@@ -42,10 +45,10 @@ class CharacterList : LoginCommand
         {
             writeStats(outPacket, character);
             writeLook(outPacket, character);
-            packet.WriteByte(0); // TODO: unknown
+            outPacket.WriteByte(0); // TODO: unknown
 
             if (character.Job == 900)
-                packet.WriteByte(2); // TODO: GM
+                outPacket.WriteByte(2); // TODO: GM
         }
 
         outPacket.WriteShort(3); // TODO: second pw request
@@ -59,7 +62,7 @@ class CharacterList : LoginCommand
         packet.WriteByte((byte)character.Gender);
         packet.WriteByte(character.Skin);
         packet.WriteInt(character.Face);
-        packet.WriteByte(0); // TODO: mega?
+        packet.WriteByte(1); // TODO: mega?
         packet.WriteInt(character.Hair);
 
         // TODO: equip
@@ -82,7 +85,7 @@ class CharacterList : LoginCommand
     private static void writeStats(MaplePacket packet, Character character)
     {
         packet.WriteInt(character.Id);
-        packet.WriteString(character.Name);
+        packet.WriteStringFixed(character.Name, 13);
         packet.WriteByte((byte)character.Gender);
         packet.WriteByte(character.Skin);
         packet.WriteInt(character.Face);
